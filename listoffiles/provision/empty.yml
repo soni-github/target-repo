@@ -1,0 +1,10 @@
+---
+
+- name: "Bugfixing Ansible"
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: test
+      debug:
+        msg: "one at a time"
+

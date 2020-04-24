@@ -1,0 +1,43 @@
+---
+
+#########################################################################################
+## THESE ARE REQUIRED, AND MUST BE EXACTLY WHATS DEFINED IN THE EA SOLUTIONS CATALOGUE ##
+#########################################################################################
+ea:
+    business: "hbg"
+    solution: "API Monitoring (Triometric)"
+    solution_alias: "api-monitoring"
+    system_subsystem: "TechnologyComponent"
+    alias: "triometric-cloud-monitor"
+    name: "(triometric-cloud-monitor) XML trafic monitoring service on Cloud"
+    development_org_unit: "(BB) BedBank - Architecture"
+
+tags: # THESE ARE REQUIRED
+    Name: "{{ea.business}}.{{ea.solution_alias}}.{{ea.alias}}"
+    it-account: "{{ it_account }}"
+    solution: "{{ea.solution_alias}}"
+    building-block: "{{ea.alias}}"
+                                      
+#########################
+# SERVICE GLOBAL CONFIG #
+#########################
+it_account: "AT0805"
+service_name: "{{ ea.alias }}"
+service_description: "{{ ea.alias }}"
+service_solution: "{{ ea.solution_alias }}"
+
+service_port: 22
+
+#Consul
+tconsul_node_tag: "{{ service_name }}"
+
+consul_services:
+  - name: "{{ service_name }}"
+    port: "{{ service_port }}"
+    checks:
+      - name: "{{ service_name }} Health check"
+        script: "systemctl status htrakctl"
+        interval: "30s"
+    consul_extra_tags:
+      - "technology-component"
+

@@ -1,0 +1,30 @@
+---
+
+############################
+## PROVISION CONFIGURATION #
+############################
+instances:
+  triometric_cloud_monitor:
+    instance_type: "c4.4xlarge"
+    instance_volume_type: "general_purpose" # default
+
+    # default volumes for general pourpose
+    instances_volumes:
+      - volume_type: no_cache
+        volume_size: 600
+        delete_on_termination: true
+        init: init
+        fstype: xfs
+        mount_path: "/opt/triometric/extra_storage"
+    network_settings:
+      network_name: "default"
+    base_tags: # THESE ARE REQUIRED
+        Name: "{{ea.business}}.{{ea.solution_alias}}.{{ea.alias}}"
+        it-account: "{{ it_account }}"
+        sla: "NO24x7"
+        solution: "{{ea.solution}}"
+        building-block: "{{ea.alias}}"
+
+# AWS SGs
+ec2_security_groups: "{{ env_ec2_default_sglist | union([ec2_sg_name]) | join(',') }}" # security groups
+ 

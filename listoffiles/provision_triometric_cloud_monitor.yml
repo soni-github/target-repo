@@ -1,0 +1,53 @@
+---
+
+#### Documentation
+# Solution: triometric-cloud-monitor 
+# Alias: Triometric Cloud Monitor
+# Type: monitoring-tools
+# Automated provisioning: yes
+# Automated redeploy: yes
+# Automated operation: yes (service)
+#
+
+
+## Playbook usage
+## Mandatory vars:
+##   - provision_profile=[profile name to load] # profile file must exist on config folder
+## Vars example:
+##   - provision_profile=dev
+## Usage:
+##   - ansible-playbook playbooks/[solution]/[building-block]/provision/provision_[building-block].yml -e "provision_profile=dev"
+
+## Provision block
+- name: Declare variables
+  hosts: localhost
+  vars_files:
+    - "../config/triometric_cloud_monitor.yml"
+    - "../config/{{ provision_profile }}.yml" # profile name must exists on config folder
+
+  tasks:
+    - name: Check variable requirements
+      assert:
+        that:
+          - provision_profile is defined
+
+    - name: Adding provision facts
+      set_fact:
+        instances: "{{ instances }}"
+
+    - name: Debug
+      debug:
+        var: instances
+
+# INCLUDE TASKS
+- name: Provisioning instances
+  include: "../../../provision/provision_helper.yml instance_provision_config={{ instances.triometric_cloud_monitor }} provision_group_name=triometric_cloud_monitor"
+
+- name: Installing baseline configuration
+  include: "../../../provision/baseline_configuration.yml provision_group_name=triometric_cloud_monitor"
+
+- name: Fixing Ansible path confusion
+  include: empty.yml
+
+- name: Installing service
+  include: srv_triometric_cloud_monitor.yml target=triometric_cloud_monitor_justprovisioned provision_variables="{{hostvars['localhost']['provision_facts'] | default('')}}"

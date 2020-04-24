@@ -1,0 +1,29 @@
+---
+
+#### Documentation
+# Solution: triometric-cloud-monitor 
+# Alias: Triometric Cloud Monitor
+# Type: monitoring-tools
+# Automated provisioning: yes
+# Automated redeploy: yes
+# Automated operation: yes (service)
+#
+
+### Service block ###
+- name: Installing triometric-cloud-monitor
+  hosts: "{{ target | default('just_provisioned') }}"
+  remote_user: "{{ environment_default_user }}"
+  become: yes
+  become_method: sudo
+  vars_files:
+    - "../config/triometric_cloud_monitor.yml"
+    - "../config/{{ provision_profile }}.yml"
+
+  roles:
+    - { role: secrets } # CONFIG SERVER CREDENTIALS
+    - { role: tech_triometric_cloud_monitor, task: install }
+    - { role: consul, task: configure }
+    - { role: consul, task: register_services }
+    - { role: consul, task: add_node_tag }
+    - { role: consul, task: operate, state: reloaded }
+### END Service block ###
